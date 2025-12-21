@@ -222,6 +222,21 @@
   overflow: hidden !important;
 }
 
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #30333A;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
 /* Custom scrollbar that shows on hover */
 .scrollbar-hide-default {
   scrollbar-width: thin;
