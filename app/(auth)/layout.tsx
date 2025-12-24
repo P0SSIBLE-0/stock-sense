@@ -1,11 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { auth } from "@/lib/better-auth/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = async ({ children }: { children: React.ReactNode }) => {
+    const session = await auth.api.getSession({ headers: await headers() });
+
+    if (session?.user) redirect("/");
+
     return (
-        <main className="flex h-screen bg-gray-900">
-            <section className="w-full lg:w-[45%] xl:w-[40%] flex flex-col px-6 lg:px-16 py-10 overflow-y-auto">
+        <main className="flex h-screen overflow-hidden bg-gray-900 relative inset-0">
+            <section className="w-full h-full lg:w-[45%] xl:w-[40%] flex flex-col px-6 lg:px-16 py-10 overflow-y-auto inset-0">
                 <Link href="/" className="mb-12 block">
                     <Image src="/assets/icons/logo.svg" alt="Logo" width={140} height={32} />
                 </Link>
@@ -14,7 +20,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 </div>
             </section>
 
-            <section className="hidden lg:flex w-full lg:w-[55%] xl:w-[60%] flex-col justify-center xl:py-10 px-12 xl:px-24 bg-gray-800 relative">
+            <section className="hidden lg:flex w-full lg:w-[55%] xl:w-[60%] flex-col justify-center xl:py-8 px-12 xl:px-24 bg-gray-800 relative">
                 <div className="max-w-3xl mx-auto w-full flex flex-col justify-center h-full">
                     <div className="mb-12 mt-auto">
                         <blockquote className="text-2xl xl:text-3xl font-medium text-white leading-tight mb-8">

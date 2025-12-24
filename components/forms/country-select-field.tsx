@@ -53,7 +53,7 @@ const CountrySelect = ({
             <PopoverTrigger
                 className={cn(
                     buttonVariants({ variant: "outline" }),
-                    "w-full h-12 px-3 py-3 text-base justify-between font-normal border-gray-600 bg-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-400 focus:border-yellow-500 rounded-lg focus:ring-0"
+                    "w-full h-12 px-3 py-3 mb-2 text-base justify-between font-normal border-gray-600 bg-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-400 focus:border-yellow-500 rounded-lg focus:ring-0 cursor-pointer"
                 )}
                 role='combobox'
                 aria-expanded={open}
@@ -76,19 +76,19 @@ const CountrySelect = ({
                 <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
             </PopoverTrigger>
             <PopoverContent
-                className='w-full p-0 bg-gray-800 border-gray-600'
+                className='w-4/5 p-0 ml-5 border-gray-800 rounded-lg'
                 align='start'
             >
                 <Command className='bg-gray-800 border-gray-600 py-2'>
                     <CommandInput
                         placeholder='Search countries...'
-                        className='bg-gray-800! text-gray-400 border-0 border-b border-gray-600 rounded-none focus:ring-0 placeholder:text-gray-500'
+                        className='text-gray-400 border-0 border-gray-600 rounded-none focus:ring-0 placeholder:text-gray-500 h-12'
                     />
-                    <CommandEmpty className='text-gray-500 py-6 text-center bg-gray-800!'>
+                    <CommandEmpty className='text-gray-500 py-6 text-center'>
                         No country found.
                     </CommandEmpty>
-                    <CommandList className='max-h-60 bg-gray-800 scrollbar-hide-default'>
-                        <CommandGroup className='bg-zinc-800 space-y-1'>
+                    <CommandList className='max-h-60 bg-gray-800 scrollbar-hide-default mt-2'>
+                        <CommandGroup className='space-y-1'>
                             {countries.map((country) => (
                                 <CommandItem
                                     key={country.value}
@@ -97,7 +97,7 @@ const CountrySelect = ({
                                         onChange(country.value);
                                         setOpen(false);
                                     }}
-                                    className='text-white cursor-pointer px-3 py-2 rounded-sm bg-zinc-800 hover:bg-zinc-600! h-10 my-1 '
+                                    className='text-white cursor-pointer px-3 py-2 rounded-sm bg-[#1a1a1a]! hover:bg-neutral-800! h-10 my-1 '
                                 >
                                     <Check
                                         className={cn(
