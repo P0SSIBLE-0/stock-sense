@@ -25,7 +25,7 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "bg-popover text-popover-foreground rounded-xl! p-1 flex size-full flex-col overflow-hidden",
+        "bg-popover text-popover-foreground rounded-xl! flex size-full flex-col overflow-hidden",
         className
       )}
       {...props}
@@ -39,12 +39,14 @@ function CommandDialog({
   children,
   className,
   showCloseButton = false,
+  shouldFilter = true,
   ...props
 }: Omit<React.ComponentProps<typeof Dialog>, "children"> & {
   title?: string
   description?: string
   className?: string
   showCloseButton?: boolean
+  shouldFilter?: boolean
   children: React.ReactNode
 }) {
   return (
@@ -57,7 +59,12 @@ function CommandDialog({
         className={cn("rounded-lg! overflow-hidden p-0", className)}
         showCloseButton={showCloseButton}
       >
-        {children}
+        <Command
+          shouldFilter={shouldFilter}
+          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground"
+        >
+          {children}
+        </Command>
       </DialogContent>
     </Dialog>
   )
@@ -69,7 +76,7 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="bg-input/30 border-input/30  rounded-md! shadow-none! *:data-[slot=input-group-addon]:pl-2!">
+      <InputGroup className="bg-transparent border-input rounded-md! shadow-none! *:data-[slot=input-group-addon]:pl-2! h-10">
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(

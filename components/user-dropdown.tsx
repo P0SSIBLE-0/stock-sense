@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import NavItems from "./NavItems";
 import { signOut } from "@/lib/actions/auth.actions";
 
-const UserDropdown = ({ user }: { user: User }) => {
+const UserDropdown = ({ user, initialStock }: { user: User, initialStock: StockWithWatchlistStatus[] }) => {
     const router = useRouter();
     const handleSignOut = async () => {
         await signOut();
@@ -41,7 +41,7 @@ const UserDropdown = ({ user }: { user: User }) => {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-gray-700 my-2" />
                 <div className="sm:hidden">
-                    <NavItems />
+                    <NavItems initialStock={initialStock} />
                     <DropdownMenuSeparator className="bg-gray-700 my-2" />
                 </div>
 

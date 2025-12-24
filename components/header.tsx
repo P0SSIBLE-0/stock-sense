@@ -2,7 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import NavItems from "./NavItems";
 import UserDropdown from "./user-dropdown";
-const Header = ({ user }: { user: User }) => {
+import { searchStocks } from "@/lib/actions/finnhub.actions";
+const Header = async ({ user }: { user: User }) => {
+    const initialStock = await searchStocks();
     return (
         <header className="flex items-center justify-between sticky top-0 z-50 py-5 w-full h-[70px] bg-gray-800">
             <div className="container flex items-center justify-between px-4 ">
@@ -16,9 +18,9 @@ const Header = ({ user }: { user: User }) => {
                     />
                 </Link>
                 <nav className="hidden sm:block">
-                    <NavItems />
+                    <NavItems initialStock={initialStock} />
                 </nav>
-                <UserDropdown user={user} />
+                <UserDropdown user={user} initialStock={initialStock} />
             </div>
 
         </header>
