@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: "Stock Sense",
     description: "Stock Sense - Your Personal Stock Market Assistant",
     type: "website",
-    url: "https://stock-sense.vercel.app",
+    url: "https://stock-sense-dev.vercel.app",
     siteName: "Stock Sense",
     images: [
       {

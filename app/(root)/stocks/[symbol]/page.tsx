@@ -21,7 +21,7 @@ export default async function StockDetails({ params }: { params: Promise<{ symbo
     const decodedSymbol = normalizeSymbol(symbol);
 
     return (
-        <div className="w-full px-2 md:p-5 lg:p-6 space-y-3 bg-black text-white min-h-screen">
+        <div className="w-full md:p-5 lg:p-6 space-y-3 bg-black text-white min-h-screen">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-2">
                 {/* Left Column */}
                 <div className="flex flex-col gap-2 xl:col-span-2">

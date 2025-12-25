@@ -20,7 +20,8 @@ export function WatchlistButton({ symbol }: WatchlistButtonProps) {
             // await toggleWatchlistAction(symbol);
 
             setIsInWatchlist(!isInWatchlist);
-            toast.success(isInWatchlist ? `Removed ${symbol} from watchlist` : `Added ${symbol} to watchlist`);
+            // toast.success(isInWatchlist ? `Removed ${symbol} from watchlist` : `Added ${symbol} to watchlist`);
+            toast.success("this feature is not available yet!");
         } catch (error) {
             toast.error("Failed to update watchlist");
         } finally {
