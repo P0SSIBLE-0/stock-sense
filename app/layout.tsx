@@ -18,6 +18,35 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Stock Sense",
   description: "Stock Sense - Your Personal Stock Market Assistant",
+  openGraph: {
+    title: "Stock Sense",
+    description: "Stock Sense - Your Personal Stock Market Assistant",
+    type: "website",
+    url: "https://stock-sense.vercel.app",
+    siteName: "Stock Sense",
+    images: [
+      {
+        url: "/dashboard-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Stock Sense - Your Personal Stock Market Assistant",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Stock Sense",
+    description: "Stock Sense - Your Personal Stock Market Assistant",
+    images: [
+      {
+        url: "/dashboard-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Stock Sense - Your Personal Stock Market Assistant",
+      },
+    ],
+  },
+
 };
 
 export default function RootLayout({

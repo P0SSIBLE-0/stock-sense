@@ -6,8 +6,8 @@ import { searchStocks } from "@/lib/actions/finnhub.actions";
 const Header = async ({ user }: { user: User }) => {
     const initialStock = await searchStocks();
     return (
-        <header className="flex items-center justify-between sticky top-0 z-50 py-5 w-full h-[70px] bg-gray-800">
-            <div className="container flex items-center justify-between px-4 ">
+        <header className="flex items-center justify-between sticky top-0 z-50 py-5 max-w-screen-2xl mx-auto h-[70px] bg-gray-800">
+            <div className="w-full flex items-center justify-between px-5 xl:px-10 lg:px-8 md:px-6 ">
                 <Link href="/">
                     <Image
                         className="h-8 w-auto cursor-pointer"
