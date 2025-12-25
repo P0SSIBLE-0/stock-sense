@@ -65,8 +65,8 @@ export function SearchCommand({
     }, [searchTerm])
 
 
-    const handleSelectStock = (value: string) => {
-        setOpen(false)
+    const handleSelectStock = () => {
+        setOpen(false);
         setSearchTerm('');
         setStocks(initialStock);
     }
@@ -75,11 +75,11 @@ export function SearchCommand({
         <>
             {
                 renderAs === 'text' ? (
-                    <span onClick={() => setOpen(true)}>
+                    <span className="cursor-pointer" onClick={() => setOpen(true)}>
                         {label}
                     </span>
                 ) : (
-                    <button onClick={() => setOpen(true)}>
+                    <button className="cursor-pointer" onClick={() => setOpen(true)}>
                         {label}
                     </button>
                 )
@@ -121,8 +121,8 @@ export function SearchCommand({
                                             className="rounded-none my-3 px-1 w-full data-selected:bg-gray-600 flex "
                                             key={stock.symbol}>
                                             <Link
-                                                onClick={() => handleSelectStock}
-                                                className="px-2 w-full cursor-pointer border-b border-gray-600 last:border-b-0 transition-colors flex items-center gap-3" href={`/stock/${stock.symbol}`}>
+                                                onClick={() => handleSelectStock()}
+                                                className="px-2 w-full cursor-pointer border-b border-gray-600 last:border-b-0 transition-colors flex items-center gap-3" href={`/stocks/${stock.symbol}`}>
                                                 <TrendingUp className="size-4" />
                                                 <div className="flex-1">
                                                     <div className="font-medium">{stock.name}</div>

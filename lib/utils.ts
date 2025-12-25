@@ -137,3 +137,8 @@ export const getFormattedTodayDate = () => new Date().toLocaleDateString('en-US'
   day: 'numeric',
   timeZone: 'UTC',
 });
+
+
+export const normalizeSymbol = (symbol: string) => {
+  return symbol.toUpperCase().split('.')[0];
+};
