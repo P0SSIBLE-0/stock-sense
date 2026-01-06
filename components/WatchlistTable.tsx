@@ -70,7 +70,7 @@ interface WatchlistTableProps {
 const WatchlistTable = ({ data }: WatchlistTableProps) => {
     return (
         <div className="rounded-md border border-neutral-800 bg-[#111] text-white">
-            <div className="w-full text-sm text-yellow-500 bg-yellow-900/10 border border-yellow-900 rounded-t-md text-center py-2">
+            <div className="w-full text-xs md:text-sm text-yellow-500 bg-yellow-900/10 border border-yellow-900 rounded-t-md text-center py-2">
                 Alerts are not available yet!
             </div>
             <Table>

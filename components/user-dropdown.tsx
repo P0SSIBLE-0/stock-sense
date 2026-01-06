@@ -14,26 +14,26 @@ const UserDropdown = ({ user, initialStock, watchlistSymbols }: { user: User, in
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
-                <div className="flex items-center gap-3 text-gray-400 hover:text-yellow-500 cursor-pointer">
+                <div className="flex items-center gap-3 text-gray-400 hover:text-brand cursor-pointer">
                     <Avatar>
-                        <AvatarImage src={user.image || "https://avatars.githubusercontent.com/u/106265510?v=4"} />
-                        <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">{user.name[0]}</AvatarFallback>
+                        <AvatarImage src={user.image || ''} />
+                        <AvatarFallback className="bg-brand text-foreground text-sm font-bold">{user.name[0].toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
-                        <span className="text-base font-medium text-gray-400">{user?.name}</span>
+                        <span className="text-base font-medium text-brand">{user?.name}</span>
                     </div>
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 bg-gray-800 border-gray-700 text-gray-400 p-2" align="end">
                 <DropdownMenuGroup>
                     <DropdownMenuLabel className="font-normal">
-                        <div className="flex items-center gap-3 text-gray-400 hover:text-yellow-500 cursor-pointer">
+                        <div className="flex items-center gap-3 text-gray-400 hover:text-brand cursor-pointer">
                             <Avatar>
-                                <AvatarImage src="https://avatars.githubusercontent.com/u/106265510?v=4" />
-                                <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">{user.name[0]}</AvatarFallback>
+                                <AvatarImage src={user.image || ''} />
+                                <AvatarFallback className="bg-brand text-foreground text-sm font-bold">{user.name[0].toUpperCase()}</AvatarFallback>
                             </Avatar>
                             <div className="flex flex-col gap-1">
-                                <span className="text-base font-medium text-gray-400">{user.name}</span>
+                                <span className="text-base font-medium text-brand">{user.name}</span>
                                 <span className="text-xs text-gray-500">{user.email}</span>
                             </div>
                         </div>

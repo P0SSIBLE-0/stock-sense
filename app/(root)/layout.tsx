@@ -15,7 +15,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
     }
     return <main className="min-h-screen text-gray-400 ">
         <Header user={user} />
-        <div className="mx-auto max-w-screen-2xl px-2 md:px-6 lg:px-8 py-8 xl:py-10">
+        <div className="mx-auto max-w-screen-2xl px-2 py-4 md:px-6 lg:px-8 md:py-8 xl:py-10">
             {children}
         </div>
     </main>;

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { auth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import Logo from "@/components/Logo";
+import Image from "next/image";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -13,7 +14,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         <main className="flex h-screen overflow-hidden bg-gray-900 relative inset-0">
             <section className="w-full h-full lg:w-[45%] xl:w-[40%] flex flex-col px-6 lg:px-16 py-10 overflow-y-auto inset-0">
                 <Link href="/" className="mb-12 block">
-                    <Image src="/assets/icons/logo.svg" alt="Logo" width={140} height={32} />
+                    <Logo />
                 </Link>
                 <div className="flex-1">
                     {children}
