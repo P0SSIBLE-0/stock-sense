@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Stock Sense",
     images: [
       {
-        url: "https://stock-sense-dev.vercel.app/assets/images/dashboard-preview.png",
+        url: "/assets/images/dashboard-preview.png",
         width: 1200,
         height: 630,
         alt: "Stock Sense - Your Personal Stock Market Assistant",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description: "Stock Sense - Your Personal Stock Market Assistant",
     images: [
       {
-        url: "https://stock-sense-dev.vercel.app/assets/images/dashboard-preview.png",
+        url: "/assets/images/dashboard-preview.png",
         width: 1200,
         height: 630,
         alt: "Stock Sense - Your Personal Stock Market Assistant",
