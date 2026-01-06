@@ -178,3 +178,68 @@ export const searchStocks = cache(async (query?: string): Promise<StockWithWatch
         return [];
     }
 });
+
+export async function getWatchlistData(symbols: string[]) {
+    try {
+        const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+        if (!token) return [];
+
+        const cleanSymbols = symbols.filter(s => s);
+
+        const data = await Promise.all(cleanSymbols.map(async (symbol) => {
+            try {
+                const quoteUrl = `${FINNHUB_BASE_URL}/quote?symbol=${symbol}&token=${token}`;
+                const profileUrl = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${symbol}&token=${token}`;
+                // const metricUrl = `${FINNHUB_BASE_URL}/stock/metric?symbol=${symbol}&metric=all&token=${token}`;
+
+                // Fetch in parallel for each symbol
+                const [quote, profile] = await Promise.all([
+                    fetchJSON<any>(quoteUrl, 0),
+                    fetchJSON<any>(profileUrl, 86400) // Cache profile for 24h
+                ]);
+
+                // Construct data object
+                const change = quote.dp ? `${quote.dp > 0 ? '+' : ''}${quote.dp.toFixed(2)}%` : '0.00%';
+                const price = quote.c ? `$${quote.c.toFixed(2)}` : 'N/A';
+                const marketCap = profile.marketCapitalization ? `$${(profile.marketCapitalization / 1000).toFixed(2)}T` : 'N/A'; // Approx, Finnhub sends in millions usually
+                // Note: Finnhub marketCap is in Million. So /1000 is Billion, /1000000 is Trillion. 
+                // Wait, if it's in Million: 3560000 M = 3.56 T. 
+                // So if profile.marketCapitalization = 3560000 -> 3.56T. So divide by 1,000,000? No.
+                // 1 Trillion = 1,000 Billion = 1,000,000 Million.
+                // Value: 3560000. 3560000 / 1000 = 3560 B = 3.56 T. 
+                // So divide by 1,000,000 for T? No, 1T = 1,000,000M. 
+                // If val is 3,560,000 (M), then 3,560,000 / 1,000,000 = 3.56 T.
+
+                let marketCapStr = 'N/A';
+                if (profile.marketCapitalization) {
+                    const mc = profile.marketCapitalization;
+                    if (mc > 1000000) {
+                        marketCapStr = `$${(mc / 1000000).toFixed(2)}T`;
+                    } else if (mc > 1000) {
+                        marketCapStr = `$${(mc / 1000).toFixed(2)}B`;
+                    } else {
+                        marketCapStr = `$${mc.toFixed(2)}M`;
+                    }
+                }
+
+                return {
+                    company: profile.name || symbol,
+                    symbol: symbol,
+                    price: price,
+                    change: change,
+                    marketCap: marketCapStr,
+                    peRatio: "N/A", // Free tier profile2 doesn't always have PE. We'll leave it or mock if needed.
+                };
+            } catch (e) {
+                console.error(`Error fetching data for ${symbol}`, e);
+                return null;
+            }
+        }));
+
+        return data.filter(item => item !== null);
+    } catch (error) {
+        console.error("Error in getWatchlistData:", error);
+        return [];
+    }
+}
+

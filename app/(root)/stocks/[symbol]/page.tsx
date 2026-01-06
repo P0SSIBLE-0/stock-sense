@@ -13,12 +13,29 @@ import { normalizeSymbol } from "@/lib/utils";
 
 const scriptBase = "https://s3.tradingview.com/external-embedding/embed-widget-";
 
+import { getAuth } from "@/lib/better-auth/auth";
+import { headers } from "next/headers";
+import { checkWatchlistStatus } from "@/lib/actions/watchlist.actions";
+
 export default async function StockDetails({ params }: { params: Promise<{ symbol: string }> }) {
     const { symbol } = await params;
 
     // Decode symbol if needed, though usually it's fine. 
     // Usually standard params are URL encoded.
     const decodedSymbol = normalizeSymbol(symbol);
+
+    const auth = await getAuth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+
+    let isInWatchlist = false;
+    let userEmail = "";
+
+    if (session?.user?.email) {
+        userEmail = session.user.email;
+        isInWatchlist = await checkWatchlistStatus(userEmail, decodedSymbol);
+    }
 
     return (
         <div className="w-full md:p-5 lg:p-6 space-y-3 bg-black text-white min-h-screen">
@@ -47,7 +64,12 @@ export default async function StockDetails({ params }: { params: Promise<{ symbo
 
                 {/* Right Column */}
                 <div className="flex flex-col gap-2 overflow-hidden">
-                    <WatchlistButton symbol={decodedSymbol} />
+                    <WatchlistButton
+                        symbol={decodedSymbol}
+                        initialIsInWatchlist={isInWatchlist}
+                        userEmail={userEmail}
+                        companyName={decodedSymbol} // Ideally we fetch the real name
+                    />
 
                     <TradingViewWidget
                         scriptUrl={scriptBase + "technical-analysis.js"}
