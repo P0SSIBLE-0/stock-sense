@@ -22,6 +22,7 @@ const Home = () => {
                         title="Stock Heatmap"
                         scriptUrl={scriptUrl + "stock-heatmap.js"}
                         config={HEATMAP_WIDGET_CONFIG}
+                        className="rounded-lg p-2"
                         height={600}
                     />
                 </div>
@@ -40,6 +41,7 @@ const Home = () => {
                     <TradingViewWidget
                         scriptUrl={scriptUrl + "market-quotes.js"}
                         config={MARKET_DATA_WIDGET_CONFIG}
+                        className="rounded-lg p-2"
                         height={600}
                     />
                 </div>

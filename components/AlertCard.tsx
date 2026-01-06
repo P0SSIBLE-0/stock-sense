@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function AlertCard({ alert }: any) {
     return (
-        <div className="bg-[#111] border border-neutral-800 rounded-lg! p-4 space-y-3 hover:border-neutral-700 transition-colors">
+        <div className="bg-[#111] border border-neutral-800 rounded-lg! px-4 py-5 space-y-3 hover:border-neutral-700 transition-colors">
             <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
                     <div className="bg-neutral-800 h-10 w-10 rounded-lg flex items-center justify-center">

@@ -9,7 +9,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import Link from "next/link"
-import { Loader2, TrendingUp, X, Star } from "lucide-react"
+import { Loader2, TrendingUp, X, Star, Command } from "lucide-react"
 import { useDebounce } from "@/hooks/useDebounce"
 import { searchStocks } from "@/lib/actions/finnhub.actions"
 import { addToWatchlist, removeFromWatchlist } from "@/lib/actions/watchlist.actions"
@@ -132,12 +132,14 @@ export function SearchCommand({
         <>
             {
                 renderAs === 'text' ? (
-                    <span className="cursor-pointer" onClick={() => setOpen(true)}>
+                    <span className="cursor-pointer hover:text-yellow-500 transition-colors flex items-center" onClick={() => setOpen(true)}>
                         {label}
+                        <Command className="size-4 ml-2 hidden md:block" /><kbd className="ml-1 hidden md:block">K</kbd>
                     </span>
                 ) : (
-                    <button className="cursor-pointer" onClick={() => setOpen(true)}>
+                    <button className="cursor-pointer hover:text-yellow-500 transition-colors flex items-center gap-2" onClick={() => setOpen(true)}>
                         {label}
+                        <Command className="size-4 ml-2 hidden md:block" /><kbd className="ml-1 hidden md:block">K</kbd>
                     </button>
                 )
             }

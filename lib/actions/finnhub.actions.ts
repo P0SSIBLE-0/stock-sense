@@ -153,9 +153,13 @@ export const searchStocks = cache(async (query?: string): Promise<StockWithWatch
             results = Array.isArray(data?.result) ? data.result : [];
         }
 
+        const seenSymbols = new Set<string>();
         const mapped: StockWithWatchlistStatus[] = results
             .map((r) => {
                 const upper = (r.symbol || '').toUpperCase();
+                if (!upper || seenSymbols.has(upper)) return null; // Deduplicate
+                seenSymbols.add(upper);
+
                 const name = r.description || upper;
                 const exchangeFromDisplay = (r.displaySymbol as string | undefined) || undefined;
                 const exchangeFromProfile = (r as any).__exchange as string | undefined;
@@ -170,6 +174,7 @@ export const searchStocks = cache(async (query?: string): Promise<StockWithWatch
                 };
                 return item;
             })
+            .filter((item): item is StockWithWatchlistStatus => item !== null)
             .slice(0, 15);
 
         return mapped;

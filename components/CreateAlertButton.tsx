@@ -12,7 +12,7 @@ export function CreateAlertButton() {
         <Button
             size="sm"
             onClick={handleClick}
-            className="bg-yellow-500 text-black hover:bg-yellow-400 font-medium cursor-pointer rounded-lg!"
+            className="bg-yellow-500 text-black hover:bg-yellow-400 font-medium cursor-pointer rounded shadow-sm"
         >
             Create Alert
         </Button>

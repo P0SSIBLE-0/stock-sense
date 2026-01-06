@@ -5,9 +5,7 @@ import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 import { getWatchlistData, getNews } from "@/lib/actions/finnhub.actions";
 import WatchlistTable from "@/components/WatchlistTable";
 import { CreateAlertButton } from "@/components/CreateAlertButton";
-import { TrendingUp } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import AlertCard from "@/components/AlertCard";
 
 const MOCK_ALERTS = [
@@ -57,24 +55,22 @@ export default async function WatchlistPage() {
     ]);
 
     return (
-        <div className="min-h-screen bg-black text-white p-6 md:p-8 font-sans">
-            <div className="max-w-7xl mx-auto space-y-8">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold tracking-tight">Watchlist</h1>
-                    {/* <WatchlistAddStock userEmail={session.user.email} /> */}
-                </div>
+        <div className="min-h-screen text-white px-2 md:px-4 font-sans">
+            <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Watchlist Table (Left 8 cols) */}
                     <div className="lg:col-span-8 flex flex-col gap-4">
+                        <div className="flex items-center justify-between h-12">
+                            <h1 className="text-2xl font-bold tracking-tight">Watchlist</h1>
+                        </div>
                         <WatchlistTable data={watchlistData} />
                     </div>
 
                     {/* Alerts Section (Right 4 cols) */}
                     <div className="lg:col-span-4 space-y-4">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between h-12">
                             <h2 className="text-xl font-bold">Alerts</h2>
                             <CreateAlertButton />
                         </div>
