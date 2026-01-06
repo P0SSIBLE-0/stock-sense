@@ -4,7 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { SearchCommand } from "./SearchCommand";
-const NavItems = ({ initialStock }: { initialStock: StockWithWatchlistStatus[] }) => {
+const NavItems = ({
+    initialStock,
+    userEmail,
+    watchlistSymbols
+}: {
+    initialStock: StockWithWatchlistStatus[],
+    userEmail?: string,
+    watchlistSymbols?: string[]
+}) => {
     const pathname = usePathname();
     const isActive = (path: string) => pathname === path;
     return (
@@ -16,7 +24,10 @@ const NavItems = ({ initialStock }: { initialStock: StockWithWatchlistStatus[] }
                             <SearchCommand
                                 renderAs='text'
                                 label='Search'
-                                initialStock={initialStock} />
+                                initialStock={initialStock}
+                                userEmail={userEmail}
+                                watchlistSymbols={watchlistSymbols}
+                            />
                         </li>
                     );
                 }

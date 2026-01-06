@@ -6,27 +6,36 @@ import {
     CommandEmpty,
     CommandGroup,
     CommandInput,
-    CommandItem,
     CommandList,
 } from "@/components/ui/command"
 import Link from "next/link"
-import { Loader2, TrendingUp, X } from "lucide-react"
+import { Loader2, TrendingUp, X, Star } from "lucide-react"
 import { useDebounce } from "@/hooks/useDebounce"
 import { searchStocks } from "@/lib/actions/finnhub.actions"
+import { addToWatchlist, removeFromWatchlist } from "@/lib/actions/watchlist.actions"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 export function SearchCommand({
     renderAs,
     label = 'Add Stock',
     initialStock,
+    userEmail,
+    watchlistSymbols
 }: {
     renderAs: "text" | "button"
     label: string
     initialStock: StockWithWatchlistStatus[]
+    userEmail?: string
+    watchlistSymbols?: string[]
 }) {
     const [open, setOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [loading, setLoading] = useState(false)
     const [stocks, setStocks] = useState<StockWithWatchlistStatus[]>(initialStock);
+    const [localWatchlist, setLocalWatchlist] = useState<Set<string>>(new Set(watchlistSymbols || []));
+    const [processing, setProcessing] = useState<string | null>(null);
+    const router = useRouter();
 
 
     const isSearchMode = !!searchTerm.trim()
@@ -43,6 +52,13 @@ export function SearchCommand({
         document.addEventListener("keydown", down)
         return () => document.removeEventListener("keydown", down)
     }, [])
+
+    // Update local watchlist when prop changes
+    useEffect(() => {
+        if (watchlistSymbols) {
+            setLocalWatchlist(new Set(watchlistSymbols));
+        }
+    }, [watchlistSymbols]);
 
     const handleSearch = async () => {
         if (!isSearchMode) return setStocks(initialStock);
@@ -69,6 +85,47 @@ export function SearchCommand({
         setOpen(false);
         setSearchTerm('');
         setStocks(initialStock);
+    }
+
+    const handleToggleWatchlist = async (e: React.MouseEvent, stock: StockWithWatchlistStatus) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!userEmail) return toast.error("Please sign in to use watchlist");
+        if (processing) return;
+
+        setProcessing(stock.symbol);
+        const isIn = localWatchlist.has(stock.symbol);
+
+        try {
+            if (isIn) {
+                const ok = await removeFromWatchlist(userEmail, stock.symbol);
+                if (ok) {
+                    const next = new Set(localWatchlist);
+                    next.delete(stock.symbol);
+                    setLocalWatchlist(next);
+                    toast.success("Removed from watchlist");
+                    router.refresh();
+                } else {
+                    toast.error("Failed to remove from watchlist");
+                }
+            } else {
+                const ok = await addToWatchlist(userEmail, stock.symbol, stock.name);
+                if (ok) {
+                    const next = new Set(localWatchlist);
+                    next.add(stock.symbol);
+                    setLocalWatchlist(next);
+                    toast.success("Added to watchlist");
+                    router.refresh();
+                } else {
+                    toast.error("Failed to add to watchlist");
+                }
+            }
+        } catch {
+            toast.error("Failed to update watchlist");
+        } finally {
+            setProcessing(null);
+        }
     }
 
     return (
@@ -118,17 +175,30 @@ export function SearchCommand({
                                     </div>
                                     {displayStocks?.map((stock) => (
                                         <li
-                                            className="rounded-none my-3 px-1 w-full data-selected:bg-gray-600 flex "
+                                            className="rounded-none my-3 px-1 w-full data-selected:bg-gray-600 flex items-center hover:bg-zinc-700/50 transition-colors"
                                             key={stock.symbol}>
                                             <Link
                                                 onClick={() => handleSelectStock()}
-                                                className="px-2 w-full cursor-pointer border-b border-gray-600 last:border-b-0 transition-colors flex items-center gap-3" href={`/stocks/${stock.symbol}`}>
-                                                <TrendingUp className="size-4" />
+                                                className="px-2 flex-1 cursor-pointer border-b border-gray-600 last:border-b-0 flex items-center gap-3 py-2" href={`/stocks/${stock.symbol}`}>
+                                                <TrendingUp className="size-4 text-green-500" />
                                                 <div className="flex-1">
-                                                    <div className="font-medium">{stock.name}</div>
+                                                    <div className="font-medium text-white">{stock.name}</div>
                                                     <div className="text-xs text-neutral-400">{stock.symbol} | {stock.exchange} | {stock.type}</div>
                                                 </div>
                                             </Link>
+                                            <button
+                                                onClick={(e) => handleToggleWatchlist(e, stock)}
+                                                className="p-2 mr-2 rounded-full hover:bg-zinc-600 transition-colors"
+                                                disabled={processing === stock.symbol}
+                                            >
+                                                {processing === stock.symbol ? (
+                                                    <Loader2 className="size-4 animate-spin text-neutral-400" />
+                                                ) : (
+                                                    <Star
+                                                        className={`size-4 transition-colors ${localWatchlist.has(stock.symbol) ? "fill-yellow-500 text-yellow-500" : "text-neutral-500 hover:text-yellow-500"}`}
+                                                    />
+                                                )}
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>

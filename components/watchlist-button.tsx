@@ -1,27 +1,51 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { Star } from "lucide-react";
+import { Star, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { addToWatchlist, removeFromWatchlist } from "@/lib/actions/watchlist.actions";
+import { useRouter } from "next/navigation";
 
 interface WatchlistButtonProps {
     symbol: string;
+    initialIsInWatchlist?: boolean;
+    userEmail?: string;
+    companyName?: string;
 }
 
-export function WatchlistButton({ symbol }: WatchlistButtonProps) {
-    const [isInWatchlist, setIsInWatchlist] = useState(false);
+export function WatchlistButton({ symbol, initialIsInWatchlist = false, userEmail, companyName }: WatchlistButtonProps) {
+    const [isInWatchlist, setIsInWatchlist] = useState(initialIsInWatchlist);
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const toggleWatchlist = async () => {
+        if (!userEmail) {
+            toast.error("Please sign in to manage your watchlist");
+            return;
+        }
+
         setIsLoading(true);
         try {
-            // TODO: Integrate actual Server Action for adding/removing from watchlist
-            // await toggleWatchlistAction(symbol);
-
-            setIsInWatchlist(!isInWatchlist);
-            // toast.success(isInWatchlist ? `Removed ${symbol} from watchlist` : `Added ${symbol} to watchlist`);
-            toast.success("this feature is not available yet!");
+            if (isInWatchlist) {
+                const success = await removeFromWatchlist(userEmail, symbol);
+                if (success) {
+                    setIsInWatchlist(false);
+                    toast.success(`Removed ${symbol} from watchlist`);
+                    router.refresh();
+                } else {
+                    toast.error("Failed to remove from watchlist");
+                }
+            } else {
+                const success = await addToWatchlist(userEmail, symbol, companyName || symbol);
+                if (success) {
+                    setIsInWatchlist(true);
+                    toast.success(`Added ${symbol} to watchlist`);
+                    router.refresh();
+                } else {
+                    toast.error("Failed to add to watchlist");
+                }
+            }
         } catch (error) {
             toast.error("Failed to update watchlist");
         } finally {
@@ -32,10 +56,17 @@ export function WatchlistButton({ symbol }: WatchlistButtonProps) {
     return (
         <Button
             onClick={toggleWatchlist}
-            disabled={isLoading}
-            className={`max-w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold transition-all duration-300 h-12 rounded! cursor-pointer mt-2 mx-2 ${isInWatchlist ? "bg-red-500 hover:bg-red-600" : ""}`}
+            disabled={isLoading || !userEmail}
+            className={`max-w-full font-semibold transition-all duration-300 h-12 rounded! cursor-pointer mt-2 mx-2 ${isInWatchlist
+                    ? "bg-red-500 hover:bg-red-600 text-white"
+                    : "bg-yellow-500 hover:bg-yellow-600 text-black"
+                }`}
         >
-            <Star className={`mr-2 h-4 w-4 ${isInWatchlist ? "fill-black" : ""}`} />
+            {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+                <Star className={`mr-2 h-4 w-4 ${isInWatchlist ? "fill-white" : "fill-transparent"}`} />
+            )}
             {isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
         </Button>
     );
