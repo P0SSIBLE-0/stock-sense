@@ -1,3 +1,4 @@
+import { CreateAlertButton } from "@/components/CreateAlertButton";
 import {
     Table,
     TableBody,
@@ -6,7 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const WATCHLIST_TABLE_HEADER = [
     "Company",
@@ -17,42 +18,6 @@ const WATCHLIST_TABLE_HEADER = [
     "P/E Ratio",
     "Alert",
 ];
-
-const SAMPLE_DATA = [
-    {
-        company: "Apple Inc",
-        symbol: "AAPL",
-        price: "$233.16",
-        change: "+1.54%",
-        marketCap: "$3.56T",
-        peRatio: "35.5",
-    },
-    {
-        company: "Microsoft Corp",
-        symbol: "MSFT",
-        price: "$520.42",
-        change: "-0.24%",
-        marketCap: "$3.75T",
-        peRatio: "32.6",
-    },
-    {
-        company: "Alphabet Inc",
-        symbol: "GOOGL",
-        price: "$201.56",
-        change: "+2.65%",
-        marketCap: "$2.52T",
-        peRatio: "21.5",
-    },
-    {
-        company: "Amazon.com Inc",
-        symbol: "AMZN",
-        price: "$244.16",
-        change: "-1.53%",
-        marketCap: "$1.45T",
-        peRatio: "33.5",
-    },
-];
-
 
 export interface WatchlistItem {
     company: string;
@@ -65,14 +30,17 @@ export interface WatchlistItem {
 
 interface WatchlistTableProps {
     data: WatchlistItem[];
+    userEmail: string;
 }
 
-const WatchlistTable = ({ data }: WatchlistTableProps) => {
+const WatchlistTable = ({ data, userEmail }: WatchlistTableProps) => {
+    const watchlistOptions = data.map((item) => ({
+        symbol: item.symbol,
+        company: item.company,
+    }));
+
     return (
-        <div className="rounded-md border border-neutral-800 bg-[#111] text-white">
-            <div className="w-full text-xs md:text-sm text-yellow-500 bg-yellow-900/10 border border-yellow-900 rounded-t-md text-center py-2">
-                Alerts are not available yet!
-            </div>
+        <div className="rounded-md border border-neutral-800 bg-[#111111] text-white">
             <Table>
                 <TableHeader>
                     <TableRow className="border-b-neutral-800 hover:bg-transparent">
@@ -86,33 +54,39 @@ const WatchlistTable = ({ data }: WatchlistTableProps) => {
                 <TableBody>
                     {data.length === 0 ? (
                         <TableRow className="border-b-neutral-800 hover:bg-transparent">
-                            <TableCell colSpan={7} className="text-center text-neutral-500 py-10">
+                            <TableCell colSpan={7} className="py-10 text-center text-neutral-500">
                                 No stocks in watchlist. Add one to get started.
                             </TableCell>
                         </TableRow>
                     ) : (
                         data.map((row) => (
                             <TableRow key={row.symbol} className="border-b-neutral-800 hover:bg-neutral-900/50">
-                                <TableCell className="font-medium text-white flex items-center gap-3">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500">
-                                        ★
-                                    </div>
-                                    {row.company}
+                                <TableCell className="flex items-center gap-3 font-medium text-white">
+                                    <Link href={`/stocks/${row.symbol}`} className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500">
+                                        {row.symbol.charAt(0)}
+                                    </Link>
+                                    <Link href={`/stocks/${row.symbol}`}>{row.company}</Link>
                                 </TableCell>
                                 <TableCell className="text-neutral-300">{row.symbol}</TableCell>
                                 <TableCell className="text-neutral-300">{row.price}</TableCell>
-                                <TableCell className={row.change.startsWith("+") ? "text-green-500" : "text-red-500"}>
+                                <TableCell className={row.change.startsWith("+") ? "text-green-500" : row.change.startsWith("-") ? "text-red-500" : "text-neutral-300"}>
                                     {row.change}
                                 </TableCell>
                                 <TableCell className="text-neutral-300">{row.marketCap}</TableCell>
                                 <TableCell className="text-neutral-300">{row.peRatio}</TableCell>
                                 <TableCell>
-                                    <Button variant="outline" size="sm" className="bg-orange-900/20 text-orange-500 border-orange-900/50 hover:bg-orange-900/40 hover:text-orange-400">
-                                        Add Alert
-                                    </Button>
+                                    <CreateAlertButton
+                                        userEmail={userEmail}
+                                        watchlist={watchlistOptions}
+                                        defaultSymbol={row.symbol}
+                                        buttonLabel="Add Alert"
+                                        variant="outline"
+                                        size="sm"
+                                    />
                                 </TableCell>
                             </TableRow>
-                        )))}
+                        ))
+                    )}
                 </TableBody>
             </Table>
         </div>
@@ -120,3 +94,4 @@ const WatchlistTable = ({ data }: WatchlistTableProps) => {
 };
 
 export default WatchlistTable;
+
