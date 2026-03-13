@@ -36,6 +36,17 @@ export const CONDITION_OPTIONS = [
     { value: 'less', label: 'Less than (<)' },
 ];
 
+export const ALERT_METRIC_OPTIONS = [
+    { value: 'price', label: 'Price' },
+    { value: 'volume', label: 'Volume' },
+];
+
+export const ALERT_FREQUENCY_OPTIONS = [
+    { value: 'daily', label: 'Once per day' },
+    { value: 'hourly', label: 'Once per hour' },
+    { value: 'once', label: 'Only once' },
+];
+
 // TradingView Charts
 export const MARKET_OVERVIEW_WIDGET_CONFIG = {
     colorTheme: 'dark', // dark mode

@@ -1,47 +1,18 @@
-import { getAuth } from "@/lib/better-auth/auth";
+import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
-import { getWatchlistData, getNews } from "@/lib/actions/finnhub.actions";
-import WatchlistTable from "@/components/WatchlistTable";
-import { CreateAlertButton } from "@/components/CreateAlertButton";
-import Link from "next/link";
 import AlertCard from "@/components/AlertCard";
-
-const MOCK_ALERTS = [
-    {
-        symbol: "AAPL",
-        image: 'https://s3-symbol-logo.tradingview.com/apple--big.svg',
-        name: "Apple Inc.",
-        price: "$229.65",
-        change: "+1.4%",
-        condition: "Price > $240.60",
-        freq: "Once per day"
-    },
-    {
-        symbol: "TSLA",
-        image: 'https://s3-symbol-logo.tradingview.com/tesla--big.svg',
-        name: "Tesla, Inc.",
-        price: "$340.84",
-        change: "-2.53%",
-        condition: "Price = $300.80",
-        freq: "Once per minute"
-    },
-    {
-        symbol: "META",
-        image: 'https://s3-symbol-logo.tradingview.com/meta--big.svg',
-        name: "Meta Platforms Inc.",
-        price: "$790.00",
-        change: "+1.4%",
-        condition: "Price < $700.40",
-        freq: "Once per hour"
-    }
-];
+import { CreateAlertButton } from "@/components/CreateAlertButton";
+import WatchlistTable from "@/components/WatchlistTable";
+import { getAlertsByEmail } from "@/lib/actions/alert.actions";
+import { getNews, getWatchlistData } from "@/lib/actions/finnhub.actions";
+import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
+import { getAuth } from "@/lib/better-auth/auth";
 
 export default async function WatchlistPage() {
     const auth = await getAuth();
     const session = await auth.api.getSession({
-        headers: await headers()
+        headers: await headers(),
     });
 
     if (!session) {
@@ -49,77 +20,88 @@ export default async function WatchlistPage() {
     }
 
     const symbols = await getWatchlistSymbolsByEmail(session.user.email);
-    const [watchlistData, news] = await Promise.all([
+    const [watchlistData, news, alerts] = await Promise.all([
         getWatchlistData(symbols),
-        getNews(symbols.length > 0 ? symbols : undefined)
+        getNews(symbols.length > 0 ? symbols : undefined),
+        getAlertsByEmail(session.user.email),
     ]);
 
-    return (
-        <div className="min-h-screen text-white px-2 md:px-4 font-sans">
-            <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
+    const watchlistOptions = watchlistData.map((item) => ({
+        symbol: item.symbol,
+        company: item.company,
+    }));
 
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Watchlist Table (Left 8 cols) */}
-                    <div className="lg:col-span-8 flex flex-col gap-4">
-                        <div className="flex items-center justify-between h-12">
+    return (
+        <div className="min-h-screen px-2 font-sans text-white md:px-4">
+            <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+                    <div className="flex flex-col gap-4 lg:col-span-8">
+                        <div className="flex h-12 items-center justify-between">
                             <h1 className="text-2xl font-bold tracking-tight">Watchlist</h1>
                         </div>
-                        <WatchlistTable data={watchlistData} />
+                        <WatchlistTable data={watchlistData} userEmail={session.user.email} />
                     </div>
 
-                    {/* Alerts Section (Right 4 cols) */}
-                    <div className="lg:col-span-4 space-y-4">
-                        <div className="flex items-center justify-between h-12">
+                    <div className="space-y-4 lg:col-span-4">
+                        <div className="flex h-12 items-center justify-between gap-3">
                             <h2 className="text-xl font-bold">Alerts</h2>
-                            <CreateAlertButton />
+                            <CreateAlertButton userEmail={session.user.email} watchlist={watchlistOptions} />
                         </div>
 
                         <div className="space-y-4">
-                            {/* Static Mock Alerts for visual completeness */}
-                            {MOCK_ALERTS.map((alert, i) => (
-                                <AlertCard key={i} alert={alert} />
-                            ))}
+                            {alerts.length > 0 ? (
+                                alerts.map((alert) => (
+                                    <AlertCard
+                                        key={alert.id}
+                                        userEmail={session.user.email}
+                                        watchlist={watchlistOptions}
+                                        alert={alert}
+                                    />
+                                ))
+                            ) : (
+                                <div className="rounded-xl border border-dashed border-neutral-800 bg-[#111111] px-5 py-8 text-center text-sm text-neutral-500">
+                                    No alerts yet. Create one from the watchlist or the button above.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
 
-                {/* News Section (Bottom) */}
-                <div className="pt-4 border-t border-neutral-800">
-                    <h2 className="text-xl font-bold mb-6">News</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="border-t border-neutral-800 pt-4">
+                    <h2 className="mb-6 text-xl font-bold">News</h2>
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                         {news.length > 0 ? news.map((article, idx) => (
-                            <div key={idx} className="bg-[#111] border border-neutral-800 rounded-lg overflow-hidden flex flex-col hover:border-neutral-600 transition-colors h-full">
-                                <div className="p-5 flex flex-col justify-between h-full">
+                            <div key={idx} className="flex h-full flex-col overflow-hidden rounded-lg border border-neutral-800 bg-[#111111] transition-colors hover:border-neutral-600">
+                                <div className="flex h-full flex-col justify-between p-5">
                                     <div className="space-y-3">
                                         <div className="flex gap-2">
                                             {article.related && (
-                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-900/30 text-green-500 border border-green-900/50 uppercase">
+                                                <span className="rounded border border-green-900/50 bg-green-900/30 px-2 py-0.5 text-[10px] font-bold uppercase text-green-500">
                                                     {article.related}
                                                 </span>
                                             )}
                                         </div>
-                                        <h3 className="font-semibold text-white leading-snug line-clamp-3">
+                                        <h3 className="line-clamp-3 font-semibold leading-snug text-white">
                                             {article.headline}
                                         </h3>
                                         <div className="text-xs text-neutral-500">
-                                            {article.source} • {article.datetime ? new Date(article.datetime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
+                                            {article.source} | {article.datetime ? new Date(article.datetime * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Recent"}
                                         </div>
-                                        <p className="text-sm text-neutral-400 line-clamp-3">
+                                        <p className="line-clamp-3 text-sm text-neutral-400">
                                             {article.summary}
                                         </p>
                                     </div>
                                     <Link
-                                        href={article.url || '#'}
+                                        href={article.url || "#"}
                                         target="_blank"
-                                        className="inline-flex items-center text-xs font-medium text-yellow-500 hover:text-yellow-400 mt-4"
+                                        className="mt-4 inline-flex items-center text-xs font-medium text-yellow-500 hover:text-yellow-400"
                                     >
-                                        Read More →
+                                        Read More
                                     </Link>
                                 </div>
                             </div>
                         )) : (
-                            <div className="col-span-4 text-center text-neutral-500 py-10">
+                            <div className="col-span-4 py-10 text-center text-neutral-500">
                                 No news available at the moment.
                             </div>
                         )}
@@ -127,5 +109,5 @@ export default async function WatchlistPage() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
