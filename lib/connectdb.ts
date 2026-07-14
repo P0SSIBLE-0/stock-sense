@@ -1,4 +1,10 @@
 import mongoose from 'mongoose';
+import dns from 'node:dns';
+
+// Explicitly set DNS servers to override local network restrictions
+if (typeof window === 'undefined') {
+    dns.setServers(['1.1.1.1', '1.0.0.1', '8.8.8.8']);
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
