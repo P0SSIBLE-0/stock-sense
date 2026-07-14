@@ -24,6 +24,10 @@ const SignIn = () => {
             if (response.success) {
                 toast.success('Sign in successful');
                 router.push('/');
+            } else {
+                toast.error('Sign in failed', {
+                    description: response.error || 'Invalid credentials'
+                });
             }
         } catch (error) {
             console.log(error);
