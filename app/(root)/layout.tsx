@@ -1,17 +1,28 @@
 import Header from "@/components/header";
-import { auth } from "@/lib/better-auth/auth";
+import { getAuth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-    const session = await auth.api.getSession({ headers: await headers() });
+    // Public layout: never crash when DB/DNS is down — fall back to guest.
+    let user: User | undefined = undefined;
+    try {
+        const auth = await getAuth();
+        const session = await auth.api.getSession({ headers: await headers() });
 
-    if (!session) redirect("/sign-in");
-    const user = {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-        image: session.user.image,
+        if (session?.user) {
+            user = {
+                id: session.user.id,
+                email: session.user.email,
+                name: session.user.name,
+                image: session.user.image,
+            };
+        }
+    } catch (error) {
+        // Never swallow Next.js control-flow errors (redirect / notFound /
+        // static-prerender bailout) — only DB/network failures fall back to guest.
+        const digest = (error as { digest?: string })?.digest;
+        if (digest === "DYNAMIC_SERVER_USAGE" || digest?.startsWith("NEXT_")) throw error;
+        console.error("Root layout: failed to get session, rendering as guest:", error);
     }
     return <main className="min-h-screen text-gray-400 ">
         <Header user={user} />

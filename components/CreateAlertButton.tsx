@@ -109,6 +109,11 @@ export function CreateAlertButton({
     };
 
     const handleOpenChange = (nextOpen: boolean) => {
+        if (nextOpen && !userEmail) {
+            toast.error("Please sign in to create alerts.");
+            router.push("/sign-in");
+            return;
+        }
         setOpen(nextOpen);
         if (nextOpen) {
             resetForm();
@@ -119,7 +124,9 @@ export function CreateAlertButton({
         event.preventDefault();
 
         if (!userEmail) {
-            toast.error("User session is missing.");
+            toast.error("Please sign in to create alerts.");
+            setOpen(false);
+            router.push("/sign-in");
             return;
         }
 

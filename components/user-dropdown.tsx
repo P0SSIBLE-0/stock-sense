@@ -12,7 +12,7 @@ const UserDropdown = ({ user, initialStock, watchlistSymbols }: { user: User, in
         router.push('/sign-in');
     }
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger>
                 <div className="flex items-center gap-3 text-gray-400 hover:text-brand cursor-pointer">
                     <Avatar>

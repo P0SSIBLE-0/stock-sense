@@ -9,7 +9,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import Link from "next/link"
-import { Loader2, TrendingUp, X, Star, Command } from "lucide-react"
+import { Loader2, TrendingUp, X, Star, Command, Search } from "lucide-react"
 import { useDebounce } from "@/hooks/useDebounce"
 import { searchStocks } from "@/lib/actions/finnhub.actions"
 import { addToWatchlist, removeFromWatchlist } from "@/lib/actions/watchlist.actions"
@@ -23,8 +23,8 @@ export function SearchCommand({
     userEmail,
     watchlistSymbols
 }: {
-    renderAs: "text" | "button"
-    label: string
+    renderAs: "text" | "button" | "icon"
+    label?: string
     initialStock: StockWithWatchlistStatus[]
     userEmail?: string
     watchlistSymbols?: string[]
@@ -91,7 +91,12 @@ export function SearchCommand({
         e.preventDefault();
         e.stopPropagation();
 
-        if (!userEmail) return toast.error("Please sign in to use watchlist");
+        if (!userEmail) {
+            toast.error("Please sign in to use watchlist");
+            setOpen(false);
+            router.push("/sign-in");
+            return;
+        }
         if (processing) return;
 
         setProcessing(stock.symbol);
@@ -131,7 +136,15 @@ export function SearchCommand({
     return (
         <>
             {
-                renderAs === 'text' ? (
+                renderAs === 'icon' ? (
+                    <button
+                        className="flex items-center justify-center rounded-md p-1.5 text-gray-400 hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
+                        onClick={() => setOpen(true)}
+                        aria-label="Search stocks"
+                    >
+                        <Search className="size-5" />
+                    </button>
+                ) : renderAs === 'text' ? (
                     <span className="cursor-pointer hover:text-yellow-500 transition-colors flex items-center" onClick={() => setOpen(true)}>
                         {label}
                         <Command className="size-4 ml-2 hidden md:block" /><kbd className="ml-1 hidden md:block">K</kbd>

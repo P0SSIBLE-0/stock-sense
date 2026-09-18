@@ -22,6 +22,7 @@ export function WatchlistButton({ symbol, initialIsInWatchlist = false, userEmai
     const toggleWatchlist = async () => {
         if (!userEmail) {
             toast.error("Please sign in to manage your watchlist");
+            router.push("/sign-in");
             return;
         }
 
@@ -56,7 +57,7 @@ export function WatchlistButton({ symbol, initialIsInWatchlist = false, userEmai
     return (
         <Button
             onClick={toggleWatchlist}
-            disabled={isLoading || !userEmail}
+            disabled={isLoading}
             className={`max-w-full font-semibold transition-all duration-300 h-12 rounded! cursor-pointer mt-2 mx-2 ${isInWatchlist
                     ? "bg-red-500 hover:bg-red-600 text-white"
                     : "bg-yellow-500 hover:bg-yellow-600 text-black"

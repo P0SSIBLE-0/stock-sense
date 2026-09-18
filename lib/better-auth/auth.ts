@@ -35,7 +35,3 @@ export const getAuth = async () => {
     return authInstance;
 
 }
-
-export const auth = await getAuth();
-// Don't use top-level await - it causes Turbopack to crash on Windows
-// Use getAuth() inside your server actions instead

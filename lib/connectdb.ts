@@ -1,11 +1,4 @@
 import mongoose from 'mongoose';
-import dns from 'node:dns';
-
-// Explicitly set DNS servers to override local network restrictions
-if (typeof window === 'undefined') {
-    dns.setServers(['1.1.1.1', '1.0.0.1', '8.8.8.8']);
-}
-
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
@@ -38,9 +31,28 @@ export const connectToDatabase = async () => {
             bufferCommands: false,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-            return mongoose;
-        });
+        cached.promise = (async () => {
+            try {
+                // 1st attempt: system default DNS (works behind VPNs/firewalls
+                // that block outbound queries to 8.8.8.8).
+                return await mongoose.connect(MONGODB_URI!, opts);
+            } catch (firstError) {
+                const code = (firstError as NodeJS.ErrnoException)?.code;
+                const syscall = (firstError as NodeJS.ErrnoException)?.syscall;
+                const isDnsError = code === 'ECONNREFUSED' && syscall === 'querySrv';
+
+                if (!isDnsError) throw firstError;
+
+                // 2nd attempt: fall back to public DNS (helps on networks
+                // whose default resolver can't answer SRV records).
+                console.warn(
+                    'MongoDB SRV lookup failed with system DNS, retrying via 8.8.8.8 / 1.1.1.1...'
+                );
+                const dns = (await import('dns')).default;
+                dns.setServers(['8.8.8.8', '1.1.1.1']);
+                return await mongoose.connect(MONGODB_URI!, opts);
+            }
+        })();
     }
 
     try {
