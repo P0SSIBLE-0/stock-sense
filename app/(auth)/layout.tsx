@@ -1,14 +1,24 @@
 import Link from "next/link";
-import { auth } from "@/lib/better-auth/auth";
+import { getAuth } from "@/lib/better-auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Logo from "@/components/Logo";
 import Image from "next/image";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-    const session = await auth.api.getSession({ headers: await headers() });
+    // If DB is down, don't crash the sign-in page — just render it.
+    try {
+        const auth = await getAuth();
+        const session = await auth.api.getSession({ headers: await headers() });
 
-    if (session?.user) redirect("/");
+        if (session?.user) redirect("/");
+    } catch (error) {
+        // redirect() itself throws NEXT_REDIRECT — must propagate.
+        // Same for the static-prerender bailout (DYNAMIC_SERVER_USAGE).
+        const digest = (error as { digest?: string })?.digest;
+        if (digest === "DYNAMIC_SERVER_USAGE" || digest?.startsWith("NEXT_")) throw error;
+        console.error("Auth layout: failed to get session, rendering auth page anyway:", error);
+    }
 
     return (
         <main className="flex h-screen overflow-hidden bg-gray-900 relative inset-0">

@@ -232,6 +232,10 @@ html {
 }
 
 
+html {
+  scrollbar-gutter: stable;
+}
+
 ::-webkit-scrollbar {
   width: 7px;
 }

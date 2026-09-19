@@ -10,10 +10,19 @@ import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 import { getAuth } from "@/lib/better-auth/auth";
 
 export default async function WatchlistPage() {
-    const auth = await getAuth();
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    let session;
+    try {
+        const auth = await getAuth();
+        session = await auth.api.getSession({
+            headers: await headers(),
+        });
+    } catch (error) {
+        // Let Next.js handle its own control flow (prerender bailout, redirect).
+        const digest = (error as { digest?: string })?.digest;
+        if (digest === "DYNAMIC_SERVER_USAGE" || digest?.startsWith("NEXT_")) throw error;
+        console.error("Watchlist: failed to get session, redirecting to sign-in:", error);
+        redirect("/sign-in");
+    }
 
     if (!session) {
         redirect("/sign-in");

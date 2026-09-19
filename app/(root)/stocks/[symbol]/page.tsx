@@ -24,17 +24,24 @@ export default async function StockDetails({ params }: { params: Promise<{ symbo
     // Usually standard params are URL encoded.
     const decodedSymbol = normalizeSymbol(symbol);
 
-    const auth = await getAuth();
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-
     let isInWatchlist = false;
     let userEmail = "";
 
-    if (session?.user?.email) {
-        userEmail = session.user.email;
-        isInWatchlist = await checkWatchlistStatus(userEmail, decodedSymbol);
+    // Public page: render as guest if DB/session lookup fails.
+    try {
+        const auth = await getAuth();
+        const session = await auth.api.getSession({
+            headers: await headers()
+        });
+
+        if (session?.user?.email) {
+            userEmail = session.user.email;
+            isInWatchlist = await checkWatchlistStatus(userEmail, decodedSymbol);
+        }
+    } catch (error) {
+        const digest = (error as { digest?: string })?.digest;
+        if (digest === "DYNAMIC_SERVER_USAGE" || digest?.startsWith("NEXT_")) throw error;
+        console.error("Stock details: failed to get session, rendering as guest:", error);
     }
 
     return (

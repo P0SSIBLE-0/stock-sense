@@ -15,9 +15,15 @@ const NavItems = ({
 }) => {
     const pathname = usePathname();
     const isActive = (path: string) => pathname === path;
+    // Guests should not see login-required links like Watchlist.
+    // Direct visits to /watchlist still redirect to /sign-in server-side.
+    const visibleItems = NAV_ITEMS.filter((item) => {
+        if (item.href === "/watchlist" && !userEmail) return false;
+        return true;
+    });
     return (
         <ul className="flex flex-col sm:flex-row gap-3 p-2 sm:gap-10 font-medium">
-            {NAV_ITEMS.map((item) => {
+            {visibleItems.map((item) => {
                 if (item.label === 'Search') {
                     return (
                         <li key={item.href}>
